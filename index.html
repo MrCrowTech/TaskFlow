@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow — Kanban Task Manager</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <!-- header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>TaskFlow</h1>
+          <p>Organize your work, beautifully.</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+          <input id="searchInput" type="text" placeholder="Search tasks..." aria-label="Search tasks" />
+        </div>
+
+        <div class="filters" role="tablist" aria-label="Filter by priority">
+          <button class="chip is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="chip" data-filter="high" role="tab" aria-selected="false">High</button>
+          <button class="chip" data-filter="medium" role="tab" aria-selected="false">Medium</button>
+          <button class="chip" data-filter="low" role="tab" aria-selected="false">Low</button>
+        </div>
+
+        <button id="themeToggle" class="icon-btn" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+
+        <button id="newTaskBtn" class="primary-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <span>New task</span>
+        </button>
+      </div>
+    </header>
+
+    <!--stats bar-->
+    <section class="stats" aria-label="Task overview">
+      <div class="stat">
+        <span class="stat-label">Total</span>
+        <span class="stat-value" id="statTotal">0</span>
+      </div>
+      <div class="stat stat-todo">
+        <span class="stat-label">To do</span>
+        <span class="stat-value" id="statTodo">0</span>
+      </div>
+      <div class="stat stat-doing">
+        <span class="stat-label">In progress</span>
+        <span class="stat-value" id="statDoing">0</span>
+      </div>
+      <div class="stat stat-done">
+        <span class="stat-label">Done</span>
+        <span class="stat-value" id="statDone">0</span>
+      </div>
+      <div class="stat stat-progress" title="Completion rate">
+        <span class="stat-label">Done rate</span>
+        <span class="stat-value"><span id="statProgress">0</span>%</span>
+      </div>
+      <button id="clearDoneBtn" class="ghost-btn" title="Remove all tasks in the Done column">Clear done</button>
+    </section>
+
+    <!--board -->
+    <main class="board" id="board">
+      <section class="column" data-status="todo">
+        <header class="column-header">
+          <div class="column-title">
+            <span class="dot dot-todo"></span>
+            <h2>To do</h2>
+            <span class="counter" id="countTodo">0</span>
+          </div>
+          <button class="column-add" data-add="todo" aria-label="Add task to To do">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </header>
+        <div class="task-list" data-list="todo" id="listTodo"></div>
+      </section>
+
+      <section class="column" data-status="doing">
+        <header class="column-header">
+          <div class="column-title">
+            <span class="dot dot-doing"></span>
+            <h2>In progress</h2>
+            <span class="counter" id="countDoing">0</span>
+          </div>
+          <button class="column-add" data-add="doing" aria-label="Add task to In progress">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </header>
+        <div class="task-list" data-list="doing" id="listDoing"></div>
+      </section>
+
+      <section class="column" data-status="done">
+        <header class="column-header">
+          <div class="column-title">
+            <span class="dot dot-done"></span>
+            <h2>Done</h2>
+            <span class="counter" id="countDone">0</span>
+          </div>
+          <button class="column-add" data-add="done" aria-label="Add task to Done">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </header>
+        <div class="task-list" data-list="done" id="listDone"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- task modal -->
+  <div class="modal" id="taskModal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header">
+        <h2 id="modalTitle">New task</h2>
+        <button class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </header>
+      <form id="taskForm" class="modal-body" autocomplete="off">
+        <input type="hidden" id="taskId" />
+        <label class="field">
+          <span class="field-label">Title</span>
+          <input id="taskTitle" type="text" placeholder="What needs to be done?" required maxlength="120" />
+        </label>
+        <label class="field">
+          <span class="field-label">Description</span>
+          <textarea id="taskDesc" rows="4" placeholder="Add more detail (optional)" maxlength="800"></textarea>
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Priority</span>
+            <select id="taskPriority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Due date</span>
+            <input id="taskDue" type="date" />
+          </label>
+          <label class="field">
+            <span class="field-label">Column</span>
+            <select id="taskStatus">
+              <option value="todo">To do</option>
+              <option value="doing">In progress</option>
+              <option value="done">Done</option>
+            </select>
+          </label>
+        </div>
+        <footer class="modal-footer">
+          <button type="button" class="ghost-btn danger" id="deleteTaskBtn" hidden>Delete</button>
+          <div class="spacer"></div>
+          <button type="button" class="ghost-btn" data-close>Cancel</button>
+          <button type="submit" class="primary-btn" id="saveTaskBtn">Save task</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
